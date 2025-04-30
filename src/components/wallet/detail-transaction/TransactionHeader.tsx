@@ -1,11 +1,10 @@
 /**
  * @author Joel Kemkeng
- * @description Composant d'en-tête pour le détail d'une transaction
+ * @description En-tête du modal de détail d'une transaction
  */
 
 import React from 'react';
-import { ChevronLeft, X } from 'lucide-react';
-import { Transaction } from '../../../types/wallet/detail-transaction/transaction.types';
+import { X, History } from 'lucide-react';
 
 interface TransactionHeaderProps {
   onClose: () => void;
@@ -17,34 +16,26 @@ export const TransactionHeader: React.FC<TransactionHeaderProps> = ({
   onHistoryClick,
 }) => {
   return (
-    <div className="sticky top-0 z-10 p-4 sm:p-6 flex items-center justify-between border-b border-gray-100 dark:border-gray-800 bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-800 dark:to-blue-900">
+    <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
       <div className="flex items-center space-x-4">
-        <button 
-          onClick={onClose}
-          className="p-2 sm:p-2.5 rounded-lg sm:rounded-xl hover:bg-blue-700/50 dark:hover:bg-blue-700/50 transition-colors" 
-          title="Retour"
-        >
-          <ChevronLeft size={24} className="text-white" />
-        </button>
-        <h2 className="text-xl sm:text-2xl font-semibold text-white">
-          Détails de Transaction
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+          Détails de la transaction
         </h2>
-      </div>
-      <div className="flex items-center space-x-3">
-        <button 
+        <button
           onClick={onHistoryClick}
-          className="py-2 px-3 sm:px-4 bg-blue-700/50 hover:bg-blue-800/50 rounded-lg sm:rounded-xl text-white text-sm font-medium transition-colors"
+          className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          title="Voir l'historique"
         >
-          Historique
-        </button>
-        <button 
-          onClick={onClose}
-          className="p-2 sm:p-2.5 rounded-lg sm:rounded-xl hover:bg-blue-700/50 dark:hover:bg-blue-700/50 transition-colors" 
-          title="Fermer"
-        >
-          <X size={24} className="text-white" />
+          <History size={20} className="text-gray-500 dark:text-gray-400" />
         </button>
       </div>
+      <button
+        onClick={onClose}
+        className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+        title="Fermer"
+      >
+        <X size={20} className="text-gray-500 dark:text-gray-400" />
+      </button>
     </div>
   );
 }; 

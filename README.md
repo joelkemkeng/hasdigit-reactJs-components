@@ -1,5 +1,22 @@
 # Bibliothèque de Composants pour les Détails de Transaction
 
+## Auteur
+
+### Informations Personnelles
+- **Nom complet** : KEMKENG NGOUZA KEDI JOEL
+- **Nom court** : Joel Kemkeng
+- **Entreprise** : HasDigit (@HasDigit)
+
+### Contact
+- **Email personnel** : kedikemkeng@gmail.com
+- **Email professionnel** : kedikemkenh@hasdigit.com
+- **Téléphone** : +33 7 51 54 27 74
+- **Téléphone alternatif** : +237659403009
+
+### Réseaux Sociaux
+- **YouTube** : [HasDigit](https://youtube.com/@hasdigit)
+- **LinkedIn** : [Joel Kemkeng](https://linkedin.com/in/joelkemkeng)
+
 ## 📋 Table des Matières
 1. [Introduction](#introduction)
 2. [Prérequis](#prérequis)

@@ -1,4 +1,9 @@
-import { Transaction } from './transaction';
+/**
+ * @author Joel Kemkeng
+ * @description Types pour les props des composants de détail de transaction
+ */
+
+import { Transaction } from './transaction.types';
 
 export interface TransactionDetailModalProps {
   transactionId: string;

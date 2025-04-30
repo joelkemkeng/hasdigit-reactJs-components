@@ -1,6 +1,8 @@
 import React from 'react';
-import { FileText, Download, Share2 } from 'lucide-react';
-import { DocumentItemProps } from '../types/props';
+import { FileText } from 'lucide-react';
+import { DocumentItemProps } from '../../../types/wallet/detail-transaction/props.types';
+import { CopyButton } from './CopyButton';
+import { Download, Share2 } from 'lucide-react';
 
 export const DocumentItem: React.FC<DocumentItemProps> = ({
   name,

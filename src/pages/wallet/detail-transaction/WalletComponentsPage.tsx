@@ -3,9 +3,9 @@
  * @description Page des composants du wallet
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import { FileText, Copy, ExternalLink } from 'lucide-react';
-import MainLayout from '../../../layouts/wallet/detail-transaction/MainLayout';
+import { useNavigate } from 'react-router-dom';
 import { TransactionDetailModal } from '../../../features/wallet/detail-transaction/TransactionDetailModal';
 
 const components = [
@@ -23,12 +23,15 @@ const components = [
 ];
 
 const WalletComponentsPage = () => {
-  const [selectedComponent, setSelectedComponent] = useState<string | null>(null);
-  const [showPreview, setShowPreview] = useState(false);
+  const navigate = useNavigate();
 
   const handleCopyCode = (code: string) => {
     navigator.clipboard.writeText(code);
     // Vous pouvez ajouter une notification de succès ici
+  };
+
+  const handleViewDemo = () => {
+    navigate('/wallet/transaction-detail-demo');
   };
 
   return (
@@ -93,7 +96,7 @@ const WalletComponentsPage = () => {
                 </h3>
                 <div className="bg-gray-50 dark:bg-gray-900 rounded-xl p-6 flex items-center justify-center min-h-[200px]">
                   <button
-                    onClick={() => setShowPreview(true)}
+                    onClick={handleViewDemo}
                     className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors flex items-center space-x-2"
                   >
                     <ExternalLink size={20} />
@@ -105,9 +108,6 @@ const WalletComponentsPage = () => {
           </div>
         ))}
       </div>
-
-      {/* Aperçu du composant */}
-      {showPreview && components[0].preview()}
     </div>
   );
 };
