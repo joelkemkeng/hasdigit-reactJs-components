@@ -1,46 +1,207 @@
-# Getting Started with Create React App
+# Bibliothèque de Composants pour les Détails de Transaction
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## 📋 Table des Matières
+1. [Introduction](#introduction)
+2. [Prérequis](#prérequis)
+3. [Installation](#installation)
+4. [Structure du Projet](#structure-du-projet)
+5. [Guide d'Utilisation](#guide-dutilisation)
+6. [Guide de Développement](#guide-de-développement)
+7. [Règles et Conventions](#règles-et-conventions)
+8. [Dépannage](#dépannage)
 
-## Available Scripts
+## Introduction
+Ce projet est une bibliothèque de composants React pour afficher les détails des transactions de portefeuille. Il est conçu pour être facile à utiliser et à maintenir, avec une architecture modulaire et des composants réutilisables.
 
-In the project directory, you can run:
+## Prérequis
+Avant de commencer, assurez-vous d'avoir installé :
 
-### `npm start`
+1. **Node.js** (version 18 ou supérieure)
+   - Pour vérifier si Node.js est installé, ouvrez un terminal et tapez :
+     ```bash
+     node --version
+     ```
+   - Si Node.js n'est pas installé, téléchargez-le sur [nodejs.org](https://nodejs.org)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+2. **Git** (pour la gestion de version)
+   - Pour vérifier si Git est installé, tapez dans le terminal :
+     ```bash
+     git --version
+     ```
+   - Si Git n'est pas installé, téléchargez-le sur [git-scm.com](https://git-scm.com)
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+3. **Un éditeur de code**
+   - Nous recommandons [Visual Studio Code](https://code.visualstudio.com)
+   - Extensions recommandées pour VS Code :
+     - ESLint
+     - Prettier
+     - TypeScript and JavaScript Language Features
 
-### `npm test`
+## Installation
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### 1. Cloner le Projet
+1. Ouvrez votre terminal
+2. Naviguez vers le dossier où vous voulez installer le projet
+3. Exécutez la commande :
+   ```bash
+   git clone [URL_DU_REPO]
+   cd detail-transactions
+   ```
 
-### `npm run build`
+### 2. Installer les Dépendances
+1. Dans le terminal, toujours dans le dossier du projet, exécutez :
+   ```bash
+   npm install
+   ```
+   Cette commande peut prendre quelques minutes. Elle installe toutes les bibliothèques nécessaires.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 3. Démarrer le Projet
+1. Pour lancer le serveur de développement :
+   ```bash
+   npm run dev
+   ```
+2. Ouvrez votre navigateur et allez à `http://localhost:3000`
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Structure du Projet
+```
+src/
+├── components/          # Composants réutilisables
+│   └── wallet/
+│       └── detail-transaction/
+├── features/           # Fonctionnalités spécifiques
+│   └── wallet/
+│       └── detail-transaction/
+├── hooks/             # Hooks personnalisés
+│   └── wallet/
+│       └── detail-transaction/
+├── layouts/           # Mises en page
+│   └── wallet/
+│       └── detail-transaction/
+├── pages/             # Pages de l'application
+│   └── wallet/
+│       └── detail-transaction/
+├── styles/            # Styles globaux
+├── types/             # Types TypeScript
+│   └── wallet/
+│       └── detail-transaction/
+└── constants/         # Constantes et configurations
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Guide d'Utilisation
 
-### `npm run eject`
+### Pour les Débutants
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+#### 1. Comprendre les Composants
+- Chaque composant est dans son propre fichier
+- Les composants sont organisés par fonctionnalité
+- Chaque composant a un fichier de types associé
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+#### 2. Navigation dans le Projet
+- Utilisez VS Code pour explorer les fichiers
+- Le panneau de gauche montre la structure des dossiers
+- Double-cliquez sur un fichier pour l'ouvrir
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+#### 3. Tester les Composants
+- Lancez le projet avec `npm run dev`
+- Ouvrez `http://localhost:3000` dans votre navigateur
+- Naviguez dans l'interface pour voir les composants en action
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## Guide de Développement
 
-## Learn More
+### Pour Ajouter un Nouveau Composant
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+#### 1. Créer la Structure
+1. Identifiez la catégorie du composant (component, feature, etc.)
+2. Créez un nouveau dossier dans le bon répertoire
+3. Créez les fichiers nécessaires :
+   ```
+   MonNouveauComposant/
+   ├── index.ts
+   ├── MonNouveauComposant.tsx
+   └── types.ts
+   ```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+#### 2. Définir les Types
+1. Dans `types.ts`, définissez les interfaces :
+   ```typescript
+   export interface MonNouveauComposantProps {
+     // Propriétés du composant
+   }
+   ```
+
+#### 3. Créer le Composant
+1. Dans `MonNouveauComposant.tsx` :
+   ```typescript
+   import React from 'react';
+   import { MonNouveauComposantProps } from './types';
+
+   export const MonNouveauComposant: React.FC<MonNouveauComposantProps> = (props) => {
+     // Implémentation du composant
+   };
+   ```
+
+#### 4. Exporter le Composant
+1. Dans `index.ts` :
+   ```typescript
+   export * from './MonNouveauComposant';
+   ```
+
+## Règles et Conventions
+
+### 1. Nommage
+- Utilisez PascalCase pour les composants : `MonComposant.tsx`
+- Utilisez camelCase pour les fonctions et variables
+- Utilisez kebab-case pour les noms de fichiers CSS
+
+### 2. Structure des Fichiers
+- Un composant par fichier
+- Types dans un fichier séparé
+- Styles dans un fichier séparé
+
+### 3. Documentation
+- Ajoutez des commentaires JSDoc pour chaque composant
+- Documentez les props avec des exemples
+- Incluez des tests unitaires
+
+### 4. Code Style
+- Utilisez TypeScript strict
+- Suivez les règles ESLint
+- Formatez avec Prettier
+
+## Dépannage
+
+### Problèmes Courants
+
+#### 1. Erreurs d'Installation
+```bash
+# Si npm install échoue
+npm cache clean --force
+npm install
+```
+
+#### 2. Erreurs de Compilation
+```bash
+# Nettoyer le cache TypeScript
+rm -rf node_modules/.cache/typescript
+```
+
+#### 3. Problèmes de Style
+```bash
+# Vérifier les erreurs ESLint
+npm run lint
+```
+
+### Support
+Pour toute question ou problème :
+1. Consultez la documentation
+2. Vérifiez les issues GitHub
+3. Contactez l'équipe de développement
+
+## Contribution
+1. Créez une branche pour votre fonctionnalité
+2. Suivez les conventions de code
+3. Ajoutez des tests
+4. Soumettez une pull request
+
+## Licence
+© 2024 Joel Kemkeng. Tous droits réservés.
