@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Ce guide vous aidera à intégrer la feature Detail Transaction dans votre projet React. Cette feature permet d'afficher les détails d'une transaction de manière élégante et interactive.
+Ce guide vous aidera à intégrer la feature Detail Transaction dans votre projet React. Cette feature permet d'afficher les détails d'une transaction de manière élégante et interactive, avec un support complet du mode sombre et des animations fluides.
 
 ## Prérequis
 
@@ -14,7 +14,10 @@ Ce guide vous aidera à intégrer la feature Detail Transaction dans votre proje
     "react-dom": "^18.0.0",
     "typescript": "^4.9.0",
     "tailwindcss": "^3.0.0",
-    "lucide-react": "^0.294.0"
+    "lucide-react": "^0.294.0",
+    "@headlessui/react": "^1.7.0",
+    "clsx": "^2.0.0",
+    "tailwind-merge": "^2.0.0"
   }
 }
 ```
@@ -31,7 +34,21 @@ module.exports = {
     extend: {
       colors: {
         // Vos couleurs personnalisées
-      }
+      },
+      animation: {
+        'fade-in': 'fadeIn 0.3s ease-in-out',
+        'slide-in': 'slideIn 0.3s ease-in-out',
+      },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        slideIn: {
+          '0%': { transform: 'translateY(10px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+      },
     }
   },
   plugins: []
@@ -53,18 +70,26 @@ src/
 ├── components/
 │   └── wallet/
 │       └── detail-transaction/
+│           ├── TransactionHeader.tsx
+│           ├── TransactionSummary.tsx
+│           ├── TransactionDetails.tsx
+│           ├── TransactionDocuments.tsx
+│           ├── TransactionActions.tsx
+│           ├── CopyButton.tsx
+│           └── DocumentItem.tsx
 ├── features/
 │   └── wallet/
 │       └── detail-transaction/
+│           └── TransactionDetailModal.tsx
 ├── hooks/
 │   └── wallet/
 │       └── detail-transaction/
-├── layouts/
-│   └── wallet/
-│       └── detail-transaction/
+│           ├── useTransaction.ts
+│           └── useClipboard.ts
 └── types/
     └── wallet/
         └── detail-transaction/
+            └── transaction.types.ts
 ```
 
 ### 3. Installer les Dépendances
@@ -84,6 +109,19 @@ export interface Transaction {
   type: 'incoming' | 'outgoing';
   // ... autres propriétés
 }
+
+export interface TransactionModalProps {
+  transactionId: string;
+  onClose: () => void;
+  onHistoryClick?: () => void;
+  customTheme?: {
+    primaryColor?: string;
+    borderRadius?: string;
+    fontFamily?: string;
+  };
+  showDocuments?: boolean;
+  enableSharing?: boolean;
+}
 ```
 
 ### 2. Configuration du Hook
@@ -93,7 +131,25 @@ import { useState, useCallback } from 'react';
 import { Transaction } from '../../../types/wallet/detail-transaction/transaction.types';
 
 export const useTransaction = (transactionId: string) => {
-  // ... implémentation
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  const [transaction, setTransaction] = useState<Transaction | null>(null);
+
+  const fetchTransaction = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch(`/api/transactions/${transactionId}`);
+      if (!response.ok) throw new Error('Transaction not found');
+      const data = await response.json();
+      setTransaction(data);
+    } catch (err) {
+      setError(err as Error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [transactionId]);
+
+  return { transaction, isLoading, error, refetch: fetchTransaction };
 };
 ```
 
@@ -106,7 +162,10 @@ function App() {
 
   return (
     <div>
-      <button onClick={() => setIsModalOpen(true)}>
+      <button 
+        onClick={() => setIsModalOpen(true)}
+        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+      >
         Voir les détails
       </button>
 
@@ -117,6 +176,13 @@ function App() {
           onHistoryClick={() => {
             // Votre logique pour l'historique
           }}
+          customTheme={{
+            primaryColor: '#3B82F6',
+            borderRadius: '1rem',
+            fontFamily: 'Inter, sans-serif'
+          }}
+          showDocuments={true}
+          enableSharing={true}
         />
       )}
     </div>
@@ -132,6 +198,23 @@ function App() {
 .transaction-modal {
   /* Vos styles personnalisés */
 }
+
+/* Support du mode sombre */
+.dark .transaction-modal {
+  /* Styles pour le mode sombre */
+}
+
+/* Animations */
+.transaction-modal-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.transaction-modal-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms, transform 300ms;
+}
 ```
 
 ### 2. Thème
@@ -141,8 +224,34 @@ export const transactionTheme = {
   colors: {
     primary: '#3B82F6',
     secondary: '#F97316',
-    // ... autres couleurs
-  }
+    success: '#22C55E',
+    error: '#EF4444',
+    warning: '#F59E0B',
+    info: '#3B82F6',
+  },
+  spacing: {
+    xs: '0.25rem',
+    sm: '0.5rem',
+    md: '1rem',
+    lg: '1.5rem',
+    xl: '2rem',
+  },
+  borderRadius: {
+    sm: '0.25rem',
+    md: '0.5rem',
+    lg: '1rem',
+    full: '9999px',
+  },
+  typography: {
+    fontFamily: 'Inter, sans-serif',
+    fontSize: {
+      xs: '0.75rem',
+      sm: '0.875rem',
+      md: '1rem',
+      lg: '1.125rem',
+      xl: '1.25rem',
+    },
+  },
 };
 ```
 
@@ -153,6 +262,21 @@ Vous pouvez personnaliser chaque composant en modifiant ses props :
   title="Détails de Transaction"
   onClose={handleClose}
   onHistoryClick={handleHistory}
+  className="custom-header"
+/>
+
+<TransactionSummary
+  transaction={transaction}
+  showBalance={true}
+  showStatus={true}
+  className="custom-summary"
+/>
+
+<TransactionDocuments
+  documents={transaction.linkedDocuments}
+  onDownload={handleDownload}
+  onShare={handleShare}
+  className="custom-documents"
 />
 ```
 
@@ -162,8 +286,32 @@ Vous pouvez personnaliser chaque composant en modifiant ses props :
 ```typescript
 // src/api/transaction.ts
 export const fetchTransaction = async (id: string): Promise<Transaction> => {
-  const response = await fetch(`/api/transactions/${id}`);
+  const response = await fetch(`/api/transactions/${id}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${getToken()}`,
+    },
+  });
+  
+  if (!response.ok) {
+    throw new Error('Failed to fetch transaction');
+  }
+  
   return response.json();
+};
+
+export const downloadDocument = async (documentId: string): Promise<Blob> => {
+  const response = await fetch(`/api/documents/${documentId}`, {
+    headers: {
+      'Authorization': `Bearer ${getToken()}`,
+    },
+  });
+  
+  if (!response.ok) {
+    throw new Error('Failed to download document');
+  }
+  
+  return response.blob();
 };
 ```
 
@@ -173,7 +321,27 @@ export const fetchTransaction = async (id: string): Promise<Transaction> => {
 import { fetchTransaction } from '../../../api/transaction';
 
 export const useTransaction = (transactionId: string) => {
-  // ... implémentation avec fetchTransaction
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  const [transaction, setTransaction] = useState<Transaction | null>(null);
+
+  const fetchData = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const data = await fetchTransaction(transactionId);
+      setTransaction(data);
+    } catch (err) {
+      setError(err as Error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [transactionId]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  return { transaction, isLoading, error, refetch: fetchData };
 };
 ```
 
@@ -185,7 +353,18 @@ export const useTransaction = (transactionId: string) => {
 export const ERROR_MESSAGES = {
   TRANSACTION_NOT_FOUND: 'Transaction non trouvée',
   NETWORK_ERROR: 'Erreur de connexion',
-  // ... autres messages
+  UNAUTHORIZED: 'Accès non autorisé',
+  FORBIDDEN: 'Accès refusé',
+  SERVER_ERROR: 'Erreur serveur',
+  DOCUMENT_DOWNLOAD_ERROR: 'Erreur lors du téléchargement du document',
+  DOCUMENT_SHARE_ERROR: 'Erreur lors du partage du document',
+};
+
+export const ERROR_CODES = {
+  NOT_FOUND: 404,
+  UNAUTHORIZED: 401,
+  FORBIDDEN: 403,
+  SERVER_ERROR: 500,
 };
 ```
 
@@ -195,6 +374,15 @@ export const ERROR_MESSAGES = {
   transactionId={id}
   onError={(error) => {
     // Votre logique de gestion d'erreur
+    console.error('Transaction error:', error);
+    showToast({
+      type: 'error',
+      message: ERROR_MESSAGES[error.code] || 'Une erreur est survenue',
+    });
+  }}
+  onRetry={() => {
+    // Logique de réessai
+    refetchTransaction();
   }}
 />
 ```
@@ -204,7 +392,7 @@ export const ERROR_MESSAGES = {
 ### 1. Tests Unitaires
 ```typescript
 // src/tests/TransactionDetailModal.test.tsx
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { TransactionDetailModal } from '../features/wallet/detail-transaction/TransactionDetailModal';
 
 describe('TransactionDetailModal', () => {
@@ -216,7 +404,23 @@ describe('TransactionDetailModal', () => {
         onHistoryClick={() => {}}
       />
     );
-    // Vos assertions
+    
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    expect(screen.getByText('Détails de la transaction')).toBeInTheDocument();
+  });
+
+  it('handles close button click', () => {
+    const onClose = jest.fn();
+    render(
+      <TransactionDetailModal
+        transactionId="test-id"
+        onClose={onClose}
+        onHistoryClick={() => {}}
+      />
+    );
+    
+    fireEvent.click(screen.getByRole('button', { name: /fermer/i }));
+    expect(onClose).toHaveBeenCalled();
   });
 });
 ```
@@ -224,12 +428,38 @@ describe('TransactionDetailModal', () => {
 ### 2. Tests d'Intégration
 ```typescript
 // src/tests/integration/transaction.test.tsx
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, waitFor } from '@testing-library/react';
 import { TransactionDetailModal } from '../../features/wallet/detail-transaction/TransactionDetailModal';
+import { useTransaction } from '../../hooks/wallet/detail-transaction/useTransaction';
+
+jest.mock('../../hooks/wallet/detail-transaction/useTransaction');
 
 describe('Transaction Integration', () => {
-  it('handles user interactions correctly', () => {
-    // Vos tests d'intégration
+  it('loads and displays transaction data', async () => {
+    const mockTransaction = {
+      id: 'test-id',
+      type: 'outgoing',
+      amount: 100,
+      // ... autres propriétés
+    };
+
+    (useTransaction as jest.Mock).mockReturnValue({
+      transaction: mockTransaction,
+      isLoading: false,
+      error: null,
+    });
+
+    render(
+      <TransactionDetailModal
+        transactionId="test-id"
+        onClose={() => {}}
+        onHistoryClick={() => {}}
+      />
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('100 €')).toBeInTheDocument();
+    });
   });
 });
 ```
@@ -250,55 +480,70 @@ npm run test
 yarn test
 ```
 
-### 3. Déploiement
+### 3. Optimisation
 ```bash
-npm run deploy
+npm run build:analyze
 # ou
-yarn deploy
+yarn build:analyze
 ```
 
-## Dépannage
+## Accessibilité
 
-### 1. Problèmes Courants
-- **Erreur de Type**: Vérifiez que tous les types sont correctement importés
-- **Erreur de Style**: Vérifiez la configuration Tailwind
-- **Erreur d'API**: Vérifiez les endpoints et les credentials
-
-### 2. Solutions
-- Vérifiez les logs de la console
-- Consultez la documentation des dépendances
-- Vérifiez les versions des packages
-
-## Support
-
-### 1. Ressources
-- Documentation officielle
-- Exemples de code
-- Guides de migration
-
-### 2. Contact
-- Email: support@example.com
-- GitHub Issues
-- Forum de la communauté
-
-## Mise à Jour
-
-### 1. Vérification des Versions
-```bash
-npm outdated
-# ou
-yarn outdated
+### 1. Configuration
+```typescript
+// src/config/accessibility.ts
+export const accessibilityConfig = {
+  ariaLabels: {
+    close: 'Fermer la modal',
+    history: 'Voir l\'historique',
+    download: 'Télécharger le document',
+    share: 'Partager le document',
+  },
+  keyboardShortcuts: {
+    close: 'Escape',
+    history: 'h',
+    download: 'd',
+    share: 's',
+  },
+};
 ```
 
-### 2. Mise à Jour
-```bash
-npm update
-# ou
-yarn upgrade
+### 2. Utilisation
+```tsx
+<TransactionDetailModal
+  transactionId={id}
+  onClose={handleClose}
+  accessibilityConfig={accessibilityConfig}
+  ariaLabel="Détails de la transaction"
+  role="dialog"
+/>
 ```
 
-### 3. Migration
-Suivez le guide de migration pour les changements majeurs.
+## Sécurité
+
+### 1. Configuration
+```typescript
+// src/config/security.ts
+export const securityConfig = {
+  csrfToken: process.env.REACT_APP_CSRF_TOKEN,
+  allowedOrigins: ['https://your-domain.com'],
+  rateLimit: {
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // limite de 100 requêtes par fenêtre
+  },
+};
+```
+
+### 2. Utilisation
+```tsx
+<TransactionDetailModal
+  transactionId={id}
+  onClose={handleClose}
+  securityConfig={securityConfig}
+  validateInput={true}
+  sanitizeOutput={true}
+/>
+```
 
 ## Conclusion
 

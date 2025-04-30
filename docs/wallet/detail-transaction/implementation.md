@@ -15,7 +15,9 @@ src/
 │           ├── TransactionSummary.tsx     # Résumé de la transaction
 │           ├── TransactionDetails.tsx     # Détails de la transaction
 │           ├── TransactionDocuments.tsx   # Gestion des documents
-│           └── TransactionActions.tsx     # Actions disponibles
+│           ├── TransactionActions.tsx     # Actions disponibles
+│           ├── CopyButton.tsx            # Bouton de copie
+│           └── DocumentItem.tsx          # Item de document
 ├── features/
 │   └── wallet/
 │       └── detail-transaction/
@@ -23,15 +25,13 @@ src/
 ├── hooks/
 │   └── wallet/
 │       └── detail-transaction/
-│           └── useTransaction.ts         # Hook de gestion des données
-├── layouts/
-│   └── wallet/
-│       └── detail-transaction/
-│           └── MainLayout.tsx           # Layout principal
+│           ├── useTransaction.ts         # Hook de gestion des données
+│           └── useClipboard.ts          # Hook de gestion du presse-papier
 ├── pages/
 │   └── wallet/
 │       └── detail-transaction/
-│           └── WalletComponentsPage.tsx # Page de démonstration
+│           ├── WalletComponentsPage.tsx  # Page de démonstration
+│           └── TransactionDetailDemo.tsx # Page de documentation
 └── types/
     └── wallet/
         └── detail-transaction/
@@ -47,6 +47,8 @@ src/
   - Gestion des erreurs
   - Affichage conditionnel des composants
   - Gestion du responsive design
+  - Support du mode sombre
+  - Animations fluides
 
 #### 2. TransactionHeader
 - **Rôle**: En-tête de la modal avec navigation
@@ -55,6 +57,8 @@ src/
   - Titre
   - Bouton d'historique
   - Design responsive
+  - Support des icônes Lucide
+  - Transitions animées
 
 #### 3. TransactionSummary
 - **Rôle**: Affichage du résumé de la transaction
@@ -64,6 +68,8 @@ src/
   - Informations de base
   - Statut de souscription
   - Informations du wallet
+  - Affichage conditionnel des badges
+  - Formatage des montants
 
 #### 4. TransactionDetails
 - **Rôle**: Affichage des détails de la transaction
@@ -71,6 +77,9 @@ src/
   - Détails du service
   - Détails du paiement
   - Informations de l'étudiant
+  - Mise en page responsive
+  - Groupement logique des informations
+  - Support des données optionnelles
 
 #### 5. TransactionDocuments
 - **Rôle**: Gestion des documents associés
@@ -78,6 +87,9 @@ src/
   - Liste des documents
   - Actions de téléchargement
   - Actions de partage
+  - Prévisualisation des documents
+  - Gestion des erreurs de téléchargement
+  - Support des différents types de fichiers
 
 #### 6. TransactionActions
 - **Rôle**: Actions disponibles sur la transaction
@@ -85,6 +97,27 @@ src/
   - Impression du reçu
   - Contestation de la transaction
   - Partage du reçu
+  - Actions contextuelles
+  - Gestion des permissions
+  - Feedback utilisateur
+
+#### 7. CopyButton
+- **Rôle**: Bouton de copie pour les informations
+- **Fonctionnalités**:
+  - Copie dans le presse-papier
+  - Feedback visuel
+  - Gestion des erreurs
+  - Support du mode sombre
+  - Animations de transition
+
+#### 8. DocumentItem
+- **Rôle**: Affichage d'un document individuel
+- **Fonctionnalités**:
+  - Prévisualisation du document
+  - Actions rapides
+  - État de téléchargement
+  - Support des différents formats
+  - Gestion des erreurs
 
 ### Hooks
 
@@ -95,6 +128,17 @@ src/
   - Gestion du chargement
   - Gestion des erreurs
   - Mise en cache des données
+  - Optimisation des requêtes
+  - Gestion des timeouts
+
+#### useClipboard
+- **Rôle**: Gestion du presse-papier
+- **Fonctionnalités**:
+  - Copie de texte
+  - Gestion des erreurs
+  - Feedback utilisateur
+  - Support des différents navigateurs
+  - Fallback pour les navigateurs non supportés
 
 ### Types
 
@@ -135,21 +179,25 @@ interface Transaction {
 1. **Initialisation**
    - Le composant `TransactionDetailModal` reçoit un `transactionId`
    - Le hook `useTransaction` est initialisé avec cet ID
+   - Les hooks secondaires sont initialisés
 
 2. **Chargement des Données**
    - `useTransaction` déclenche `fetchTransaction`
    - L'état de chargement est activé
    - Les données sont récupérées (actuellement mockées)
+   - La mise en cache est gérée
 
 3. **Affichage**
    - Les données sont distribuées aux composants enfants
    - Chaque composant affiche sa partie spécifique
    - Les actions sont rendues disponibles
+   - Les animations sont déclenchées
 
 4. **Interactions**
    - Les actions utilisateur sont gérées par les composants
    - Les callbacks sont exécutés
    - L'état est mis à jour si nécessaire
+   - Le feedback utilisateur est fourni
 
 ## Gestion des Erreurs
 
@@ -157,11 +205,15 @@ interface Transaction {
    - Capture des erreurs de récupération
    - Mise à jour de l'état d'erreur
    - Gestion des timeouts
+   - Retry automatique
+   - Fallback data
 
 2. **Niveau Composant**
    - Affichage des messages d'erreur
    - Gestion des états de chargement
    - Fallback UI
+   - Gestion des erreurs de rendu
+   - Recovery automatique
 
 ## Responsive Design
 
@@ -169,11 +221,14 @@ interface Transaction {
    - Mobile: < 640px
    - Tablet: 640px - 1024px
    - Desktop: > 1024px
+   - Large Desktop: > 1280px
 
 2. **Adaptations**
    - Layout flexible
    - Composants redimensionnables
    - Navigation adaptative
+   - Optimisation des images
+   - Gestion de la typographie
 
 ## Performance
 
@@ -181,11 +236,15 @@ interface Transaction {
    - Composants memoïsés
    - Chargement paresseux
    - Mise en cache des données
+   - Code splitting
+   - Tree shaking
 
 2. **Bonnes Pratiques**
    - Code splitting
    - Lazy loading
    - Optimisation des rendus
+   - Gestion de la mémoire
+   - Optimisation des assets
 
 ## Tests
 
@@ -193,11 +252,15 @@ interface Transaction {
    - Tests des composants
    - Tests des hooks
    - Tests des utilitaires
+   - Tests des types
+   - Tests des constantes
 
 2. **Intégration**
    - Tests des flux
    - Tests des interactions
    - Tests des états
+   - Tests des erreurs
+   - Tests de performance
 
 ## Maintenance
 
@@ -205,8 +268,44 @@ interface Transaction {
    - Commentaires de code
    - Documentation des props
    - Documentation des types
+   - Guides de migration
+   - Exemples d'utilisation
 
 2. **Versioning**
    - Semantic versioning
    - Changelog
-   - Migration guides 
+   - Migration guides
+   - Breaking changes
+   - Deprecation notices
+
+## Accessibilité
+
+1. **Standards**
+   - WCAG 2.1
+   - ARIA labels
+   - Navigation au clavier
+   - Contraste des couleurs
+   - Textes alternatifs
+
+2. **Implémentation**
+   - Rôles ARIA
+   - États ARIA
+   - Focus management
+   - Screen reader support
+   - Keyboard navigation
+
+## Sécurité
+
+1. **Bonnes Pratiques**
+   - Validation des données
+   - Protection CSRF
+   - Sanitization
+   - Rate limiting
+   - Error handling
+
+2. **Implémentation**
+   - Input validation
+   - Output encoding
+   - Secure headers
+   - Content security
+   - Error boundaries 
